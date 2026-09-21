@@ -1,0 +1,66 @@
+.dim {
+  color: var(--text-dim);
+}
+
+.pass-screen {
+  align-items: center;
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+}
+
+.round-tag {
+  color: var(--accent-3);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pass-name {
+  font-size: 2.2rem;
+  font-weight: 900;
+}
+
+.clue-word {
+  color: var(--accent);
+}
+
+.scoreboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.score-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--bg-panel-2);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem 0.3rem 0.3rem;
+  font-size: 0.85rem;
+  border: 1px solid transparent;
+}
+
+.score-chip-active {
+  border-color: var(--accent);
+}
+
+.score-initials {
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #111;
+}
+
+.score-value {
+  font-weight: 800;
+}

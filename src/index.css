@@ -1,0 +1,109 @@
+:root {
+  --bg: #14141c;
+  --bg-panel: #1e1e2a;
+  --bg-panel-2: #262636;
+  --text: #f4f4f8;
+  --text-dim: #a3a3b5;
+  --accent: #ffe600;
+  --accent-2: #ff5c8a;
+  --accent-3: #4dd0e1;
+  --danger: #ff5c5c;
+  --success: #4caf82;
+  --radius: 10px;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: radial-gradient(circle at top, #1c1c2b, #0f0f16 70%);
+  color: var(--text);
+}
+
+button {
+  font-family: inherit;
+}
+
+input,
+select {
+  font-family: inherit;
+  background: var(--bg-panel-2);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 0.5em 0.7em;
+  font-size: 1rem;
+}
+
+.btn {
+  background: var(--bg-panel-2);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.65em 1.3em;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.08s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #ffb300);
+  color: #1a1a1a;
+  border: none;
+}
+
+.btn-accent2 {
+  background: linear-gradient(135deg, var(--accent-2), #c2185b);
+  color: #fff;
+  border: none;
+}
+
+.btn-accent3 {
+  background: linear-gradient(135deg, var(--accent-3), #0288d1);
+  color: #08222a;
+  border: none;
+}
+
+.btn-ghost {
+  background: transparent;
+}
+
+.panel {
+  background: var(--bg-panel);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
