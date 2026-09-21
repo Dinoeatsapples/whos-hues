@@ -1,9 +1,12 @@
 // Core "Who's Hues" board generation, coordinate helpers, and scoring.
-// The board is a grid of uniquely colored squares addressed by a
-// row letter (A-X) and a column number (1-20), e.g. "M14".
+// Modeled after the real Hues and Cues board: a 30 (wide) x 16 (tall)
+// grid of 480 uniquely colored squares, addressed by a row letter
+// (A-P) and a column number (1-30), e.g. "M14". Hue sweeps left to
+// right around most of the color wheel; each row is a shade band
+// (vivid/saturated near the top, softer pastels near the bottom).
 
-export const ROWS = 24 // A .. X
-export const COLS = 20 // 1 .. 20
+export const ROWS = 16 // A .. P
+export const COLS = 30 // 1 .. 30
 
 export const ROW_LETTERS = Array.from({ length: ROWS }, (_, i) =>
   String.fromCharCode(65 + i)
@@ -26,7 +29,7 @@ export function coordToCode(c: Coord): string {
 
 /** Parse a code like "M14" back into a Coord. Returns null if invalid. */
 export function codeToCoord(code: string): Coord | null {
-  const match = /^([A-Xa-x])\s*(\d{1,2})$/.exec(code.trim())
+  const match = /^([A-Pa-p])\s*(\d{1,2})$/.exec(code.trim())
   if (!match) return null
   const row = match[1].toUpperCase().charCodeAt(0) - 65
   const col = parseInt(match[2], 10) - 1
@@ -34,32 +37,25 @@ export function codeToCoord(code: string): Coord | null {
   return { row, col }
 }
 
-/**
- * Generates the color for a given cell. The last column is a
- * grayscale ramp (like the neutral column on the physical board);
- * every other column sweeps hue left-to-right while rows sweep
- * lightness top (light) to bottom (dark), with saturation easing
- * near the top/bottom so the board isn't neon at the extremes.
- */
 export interface Hsl {
   h: number
   s: number
   l: number
 }
 
+/**
+ * Generates the color for a given cell. Columns sweep almost the
+ * full hue wheel left-to-right (like the real board's rainbow loop),
+ * while rows move from vivid/saturated near the top to soft, light
+ * pastels near the bottom — the same "warm-to-cool, vivid-to-pastel"
+ * read the physical board has.
+ */
 export function hslForCell(row: number, col: number): Hsl {
-  const isGrayCol = col === COLS - 1
-  const lightness = 92 - (row / (ROWS - 1)) * 84 // 92% -> 8%
-
-  if (isGrayCol) {
-    return { h: 0, s: 0, l: lightness }
-  }
-
-  const hue = (col / (COLS - 1)) * 345 // leave a small seam near red wraparound
+  const hue = (col / COLS) * 360
   const rowFactor = row / (ROWS - 1) // 0 top .. 1 bottom
-  // Ease saturation down near the very light and very dark rows.
-  const edgeEase = 1 - Math.pow(Math.abs(rowFactor - 0.5) * 2, 2) * 0.35
-  const saturation = 78 * edgeEase
+
+  const lightness = 32 + rowFactor * 60 // 32% (rich) -> 92% (pale)
+  const saturation = 90 - rowFactor * 50 // 90% (vivid) -> 40% (soft)
 
   return { h: hue, s: saturation, l: lightness }
 }
@@ -86,6 +82,20 @@ export function randomCoord(): Coord {
     row: Math.floor(Math.random() * ROWS),
     col: Math.floor(Math.random() * COLS),
   }
+}
+
+/** N random, mutually-distinct coordinates — used for the "choose a card" step. */
+export function randomCoords(n: number): Coord[] {
+  const seen = new Set<string>()
+  const out: Coord[] = []
+  while (out.length < n) {
+    const c = randomCoord()
+    const key = `${c.row}-${c.col}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(c)
+  }
+  return out
 }
 
 /** Chebyshev distance between two coordinates (matches 8-way adjacency on the grid). */

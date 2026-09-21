@@ -19,10 +19,11 @@ export interface RoomRevealView {
 export interface RoomView {
   code: string
   players: RoomPlayerView[]
-  phase: 'lobby' | 'clue' | 'guessing' | 'reveal'
+  phase: 'lobby' | 'choose' | 'clue' | 'guessing' | 'reveal'
   round: number
   clueGiverId: string | null
   clue: string
+  candidates: Coord[] // only populated for the clue-giver during the 'choose' phase
   target: Coord | null // only populated for the clue-giver, or everyone during reveal
   submittedIds: string[]
   reveal: RoomRevealView | null

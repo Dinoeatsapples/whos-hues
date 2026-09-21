@@ -64,3 +64,43 @@
 .score-value {
   font-weight: 800;
 }
+
+.color-card {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  background: #0a0a0a;
+  border: 3px solid #000;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  width: 100%;
+}
+
+.color-card-swatch {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border: 2px solid #000;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.color-card-swatch:hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  border-color: #fff;
+  z-index: 2;
+}
+
+.color-card-code {
+  position: absolute;
+  bottom: 0.3em;
+  right: 0.4em;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}

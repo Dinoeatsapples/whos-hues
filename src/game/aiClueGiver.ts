@@ -105,9 +105,9 @@ function hueInRange(hue: number, range: [number, number]): boolean {
  * Falls back to a generic descriptor if nothing matches closely.
  */
 export function generateClue(hue: number, saturation: number, lightness: number): string {
-  const isGray = saturation < 12
+  const isGray = saturation < 15
   const candidates = CLUE_BANK.filter((entry) => {
-    const lightnessOk = lightness >= entry.lightness[0] - 6 && lightness <= entry.lightness[1] + 6
+    const lightnessOk = lightness >= entry.lightness[0] - 10 && lightness <= entry.lightness[1] + 10
     if (!lightnessOk) return false
     if (entry.hue === null) return isGray
     if (isGray) return false

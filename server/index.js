@@ -10,11 +10,25 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001
-const ROWS = 24
-const COLS = 20
+const ROWS = 16
+const COLS = 30
+const CARD_OPTIONS = 6
 
 function randomCoord() {
   return { row: Math.floor(Math.random() * ROWS), col: Math.floor(Math.random() * COLS) }
+}
+
+function randomCoords(n) {
+  const seen = new Set()
+  const out = []
+  while (out.length < n) {
+    const c = randomCoord()
+    const key = `${c.row}-${c.col}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(c)
+  }
+  return out
 }
 
 function coordDistance(a, b) {
@@ -46,9 +60,10 @@ function createRoom() {
   const room = {
     code,
     players: [], // { id, name, score, connected }
-    phase: 'lobby', // lobby | clue | guessing | reveal
+    phase: 'lobby', // lobby | choose | clue | guessing | reveal
     round: 0,
     clueGiverIdx: -1,
+    candidates: [],
     target: null,
     clue: '',
     guesses: {}, // playerId -> coord
@@ -77,7 +92,8 @@ function viewFor(room, socketId) {
     round: room.round,
     clueGiverId: clueGiver?.id ?? null,
     clue: room.clue,
-    target: room.phase === 'reveal' || isClueGiver ? room.target : null,
+    candidates: room.phase === 'choose' && isClueGiver ? room.candidates : [],
+    target: room.phase === 'reveal' || (isClueGiver && room.phase !== 'choose') ? room.target : null,
     submittedIds: room.phase === 'guessing' || room.phase === 'reveal' ? submittedIds : [],
     reveal: room.phase === 'reveal' ? room.lastReveal : null,
   }
@@ -92,10 +108,11 @@ function broadcastRoom(io, room) {
 function startRound(room) {
   room.round += 1
   room.clueGiverIdx = (room.clueGiverIdx + 1) % room.players.length
-  room.target = randomCoord()
+  room.candidates = randomCoords(CARD_OPTIONS)
+  room.target = null
   room.clue = ''
   room.guesses = {}
-  room.phase = 'clue'
+  room.phase = 'choose'
 }
 
 const httpServer = createServer((_req, res) => {
@@ -135,6 +152,18 @@ io.on('connection', (socket) => {
     const room = rooms.get(currentRoomCode)
     if (!room || room.players.length < 2) return
     startRound(room)
+    broadcastRoom(io, room)
+  })
+
+  socket.on('choose-color', ({ coord }) => {
+    const room = rooms.get(currentRoomCode)
+    if (!room || room.phase !== 'choose') return
+    const clueGiver = room.players[room.clueGiverIdx]
+    if (clueGiver.id !== socket.id) return
+    const isValid = room.candidates.some((c) => c.row === coord?.row && c.col === coord?.col)
+    if (!isValid) return
+    room.target = coord
+    room.phase = 'clue'
     broadcastRoom(io, room)
   })
 

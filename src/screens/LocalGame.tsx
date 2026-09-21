@@ -3,14 +3,17 @@ import ColorBoard, { type Marker } from '../components/ColorBoard'
 import {
   clueGiverPoints,
   coordToCode,
-  randomCoord,
+  colorForCell,
+  randomCoords,
   scoreGuess,
   type Coord,
 } from '../game/colorBoard'
 import type { Player } from '../game/types'
 import './LocalGame.css'
 
-type Phase = 'setup' | 'clue-pass' | 'clue-reveal' | 'guess-pass' | 'guessing' | 'reveal'
+type Phase = 'setup' | 'clue-pass' | 'clue-choose' | 'clue-reveal' | 'guess-pass' | 'guessing' | 'reveal'
+
+const CARD_OPTIONS = 6
 
 let uid = 0
 function nextId() {
@@ -32,7 +35,8 @@ export default function LocalGame() {
   const [phase, setPhase] = useState<Phase>('setup')
   const [round, setRound] = useState(1)
   const [clueGiverIdx, setClueGiverIdx] = useState(0)
-  const [target, setTarget] = useState<Coord>(() => randomCoord())
+  const [candidates, setCandidates] = useState<Coord[]>(() => randomCoords(CARD_OPTIONS))
+  const [target, setTarget] = useState<Coord | null>(null)
   const [clue, setClue] = useState('')
   const [guesses, setGuesses] = useState<Record<string, Coord>>({})
   const [pendingGuess, setPendingGuess] = useState<Coord | null>(null)
@@ -62,8 +66,14 @@ export default function LocalGame() {
   }
 
   function beginClueTurn() {
-    setTarget(randomCoord())
+    setCandidates(randomCoords(CARD_OPTIONS))
+    setTarget(null)
     setClue('')
+    setPhase('clue-choose')
+  }
+
+  function chooseColor(coord: Coord) {
+    setTarget(coord)
     setPhase('clue-reveal')
   }
 
@@ -93,7 +103,7 @@ export default function LocalGame() {
   }
 
   const roundScoring = useMemo(() => {
-    if (phase !== 'reveal') return null
+    if (phase !== 'reveal' || !target) return null
     const results = guessers.map((g) => {
       const guess = guesses[g.id]
       if (!guess) return { player: g, points: 0, distance: -1 }
@@ -182,7 +192,24 @@ export default function LocalGame() {
     )
   }
 
-  if (phase === 'clue-reveal') {
+  if (phase === 'clue-choose') {
+    return (
+      <div className="panel stack" style={{ maxWidth: 560, width: '100%', alignItems: 'center' }}>
+        <div className="round-tag">Round {round}</div>
+        <h2>Pick your secret color, {clueGiver.name}</h2>
+        <p className="dim">Only you should look. Choose one of these 6 colors.</p>
+        <div className="color-card">
+          {candidates.map((c) => (
+            <button key={coordToCode(c)} className="color-card-swatch" style={{ background: colorForCell(c.row, c.col) }} onClick={() => chooseColor(c)}>
+              <span className="color-card-code">{coordToCode(c)}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (phase === 'clue-reveal' && target) {
     return (
       <div className="panel stack" style={{ width: '100%', maxWidth: 900 }}>
         <div className="row" style={{ justifyContent: 'space-between' }}>
@@ -247,7 +274,7 @@ export default function LocalGame() {
     )
   }
 
-  if (phase === 'reveal' && roundScoring) {
+  if (phase === 'reveal' && roundScoring && target) {
     const markers: Marker[] = [
       { coord: target, label: '★', className: 'marker-target' },
       ...roundScoring.results

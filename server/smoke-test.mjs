@@ -23,6 +23,9 @@ a.on('room-update', (view) => {
   if (view.phase === 'lobby' && view.players.length === 2) {
     a.emit('start-game')
   }
+  if (view.phase === 'choose' && view.clueGiverId === a.id) {
+    a.emit('choose-color', { coord: view.candidates[0] })
+  }
   if (view.phase === 'clue' && view.clueGiverId === a.id) {
     a.emit('submit-clue', { clue: 'Ocean' })
   }

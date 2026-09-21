@@ -1,16 +1,32 @@
+@font-face {
+  font-family: 'Pixel';
+  src: url('./assets/fonts/Silkscreen-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Pixel';
+  src: url('./assets/fonts/Silkscreen-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+
 :root {
   --bg: #14141c;
   --bg-panel: #1e1e2a;
   --bg-panel-2: #262636;
-  --text: #f4f4f8;
-  --text-dim: #a3a3b5;
+  --text: #ff2020;
+  --text-dim: #b52222;
   --accent: #ffe600;
   --accent-2: #ff5c8a;
   --accent-3: #4dd0e1;
   --danger: #ff5c5c;
   --success: #4caf82;
   --radius: 10px;
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Pixel', 'Segoe UI', system-ui, -apple-system, sans-serif;
   color-scheme: dark;
 }
 
@@ -26,8 +42,43 @@ body,
 }
 
 body {
-  background: radial-gradient(circle at top, #1c1c2b, #0f0f16 70%);
+  background-color: #0f0f16;
+  background-image:
+    linear-gradient(rgba(10, 10, 14, 0.74), rgba(10, 10, 14, 0.8)),
+    linear-gradient(
+      115deg,
+      #ff3b30 0%,
+      #ff9500 12%,
+      #ffcc00 24%,
+      #4caf50 38%,
+      #00bcd4 52%,
+      #2979ff 64%,
+      #651fff 76%,
+      #d500f9 88%,
+      #ff3b30 100%
+    );
+  background-size: 100% 100%, 220% 220%;
+  background-attachment: fixed, fixed;
+  animation: rainbow-drift 40s linear infinite;
   color: var(--text);
+}
+
+@keyframes rainbow-drift {
+  0% {
+    background-position: 0 0, 0% 50%;
+  }
+  50% {
+    background-position: 0 0, 100% 50%;
+  }
+  100% {
+    background-position: 0 0, 0% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+  }
 }
 
 button {

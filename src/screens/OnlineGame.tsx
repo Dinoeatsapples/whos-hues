@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import ColorBoard, { type Marker } from '../components/ColorBoard'
-import { coordToCode, type Coord } from '../game/colorBoard'
+import { colorForCell, coordToCode, type Coord } from '../game/colorBoard'
 import {
   connectSocket,
   disconnectSocket,
@@ -74,6 +74,10 @@ export default function OnlineGame() {
 
   function startGame() {
     socketRef.current?.emit('start-game')
+  }
+
+  function chooseColor(coord: Coord) {
+    socketRef.current?.emit('choose-color', { coord })
   }
 
   function submitClue() {
@@ -165,6 +169,37 @@ export default function OnlineGame() {
         <button className="btn btn-ghost" onClick={leaveRoom}>
           Leave Room
         </button>
+      </div>
+    )
+  }
+
+  if (room.phase === 'choose') {
+    if (isClueGiver) {
+      return (
+        <div className="panel stack" style={{ maxWidth: 560, width: '100%', alignItems: 'center' }}>
+          <div className="round-tag">Round {room.round}</div>
+          <h2>Pick your secret color</h2>
+          <p className="dim">Only you should look. Choose one of these 6 colors.</p>
+          <div className="color-card">
+            {room.candidates.map((c) => (
+              <button
+                key={coordToCode(c)}
+                className="color-card-swatch"
+                style={{ background: colorForCell(c.row, c.col) }}
+                onClick={() => chooseColor(c)}
+              >
+                <span className="color-card-code">{coordToCode(c)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )
+    }
+    return (
+      <div className="panel stack pass-screen">
+        <div className="round-tag">Round {room.round}</div>
+        <h2>Waiting for {clueGiver?.name} to pick a color...</h2>
+        {scoreboard}
       </div>
     )
   }
