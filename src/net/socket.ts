@@ -29,7 +29,12 @@ export interface RoomView {
   reveal: RoomRevealView | null
 }
 
-const DEFAULT_SERVER_URL = 'http://localhost:3001'
+// In production (itch.io, static hosting) this is baked in at build time via
+// VITE_SERVER_URL and points at the deployed multiplayer server (see server/README).
+// Otherwise, fall back to "whatever host served this page, port 3001" so LAN
+// testing works for guests too (instead of everyone resolving to their own machine).
+const DEFAULT_SERVER_URL =
+  import.meta.env.VITE_SERVER_URL || `${window.location.protocol}//${window.location.hostname}:3001`
 
 export function getSavedServerUrl(): string {
   return localStorage.getItem('whos-hues-server-url') || DEFAULT_SERVER_URL

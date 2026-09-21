@@ -22,7 +22,6 @@
     "concurrently": "^10.0.5",
     "electron": "^44.4.3",
     "electron-builder": "^26.15.3",
-    "socket.io": "^4.8.3",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
     "vite-plugin-mkcert": "^1.17.12",
@@ -31,7 +30,11 @@
   "dependencies": {
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "build": {
     "appId": "com.whoshues.app",
